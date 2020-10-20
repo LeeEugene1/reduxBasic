@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReduxHtml</title>
+</head>
+<body>
+    <!-- Redux is a Javscript Library that helps us manage our app's data  -->
+    <input type="text" id="todo">
+    <button id="submit-todo">submit</button>
+    <div id="container"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/4.0.5/redux.min.js"></script>
+    <script>
+        const reducer = Redux.combineReducers({
+            todos:(state = [], action)=>{
+                const newState = Object.assign([],state);
+                if(action.type == 'add'){
+                    newState.push(action.item);
+                }
+                return newState;
+                // return ['gloceries', 'make dinner'];
+            }
+        });
+        const store = Redux.createStore(reducer);
+        // Window.store = store;
+        //store.getState()
+
+        const render = () => {
+            const container = document.getElementById('container');
+            container.innerHTML = '';
+            const state = store.getState();
+            state.todos.forEach((todo)=>{
+                const e = document.createElement('div');
+                e.innerHTML = todo;
+                container.appendChild(e);
+            });
+        };
+        // render();
+
+        document.getElementById('submit-todo').onclick = () =>{
+            store.dispatch({
+                type:'add',
+                item: document.getElementById('todo').value
+            });
+            render();
+        };
+    </script>
+
+</body>
+</html>
