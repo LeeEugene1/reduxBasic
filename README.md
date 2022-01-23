@@ -1,3 +1,36 @@
+# quiz toy project
+퀴즈프로젝트를 하면서 리덕스를 공부한다.
+
+# 리덕스 셋팅
+
+## reducer만들기
+score.js
+
+## reducer 호출
+src/index.js
+
+## 리덕스를위한 코드
+./index.js
+```javascript
+//리덕스를 위한 코드
+import {createStore} from "redux"
+import rootReducer from "./store"
+import {Provider} from "react-reducer"
+
+const devTool = 
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+const store = createStore(rootReducer, devTool)
+
+ReactDOM.render(
+  <React.StrictMode>
+  <Provider store={store}>
+    <App />
+  </Provider>
+  </React.StrictMode>,
+  document.getElementById('root')
+);
+```
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
