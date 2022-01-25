@@ -10,10 +10,10 @@ const RESET = "score/RESET"
 
 
 //액션 생성 함수
-export function check({quizIndex, answer}){
+export function check({isCorrect}){
     return{
         type:CHECK_CORRECT,
-        payload:{quizIndex, answer}
+        payload:{isCorrect}
     }
 }
 
@@ -23,7 +23,7 @@ export function next(){
     }
 }
 
-export function RESET(){
+export function reset(){
     return{
         type:RESET,
     }
@@ -54,21 +54,37 @@ const initialState = {
     page:0,//0:intro, 1~n:quiz page(quizs.length), n+1:last page(quizs.length+1)
     quizs:[
         {
-                    q:'대한민국의 수도는?',
-                    a:[
-                        {
-                            text:'서울',
-                            isCorrect:true,
-                        },
-                        {
-                            text:'부산',
-                            isCorrect:false,
-                        },            {
-                            text:'인천',
-                            isCorrect:false,
-                        },
-                    ]
+            q:'대한민국의 수도는?',
+            a:[
+                {
+                    text:'서울',
+                    isCorrect:true,
                 },
+                {
+                    text:'부산',
+                    isCorrect:false,
+                },            {
+                    text:'인천',
+                    isCorrect:false,
+                },
+            ]
+        },
+        {
+            q:'미국의 수도는?',
+            a:[
+                {
+                    text:'시카고',
+                    isCorrect:false,
+                },
+                {
+                    text:'뉴욕',
+                    isCorrect:false,
+                },            {
+                    text:'워싱턴DC',
+                    isCorrect:true,
+                },
+            ]
+        },        
     ]
 }
 
@@ -83,7 +99,7 @@ export default function score(state = initialState, action){
         case CHECK_CORRECT:
             return{
                 ...state,
-                score:state.quizs[action.payload.quizIndex].isCorrect 
+                score:action.payload.isCorrect 
                 ? state.score + 10 : state.score
             }
         case NEXT_PAGE:
@@ -91,7 +107,7 @@ export default function score(state = initialState, action){
                 ...state,
                 page:state.page + 1
             }
-        case SESET:
+        case RESET:
             return{
                 ...state,
                 score:0,
