@@ -95,12 +95,13 @@ const initialState = {
 
 //reducer
 export default function score(state = initialState, action){
+    console.log(action)
     switch (action.type){
         case CHECK_CORRECT:
             return{
                 ...state,
                 score:action.payload.isCorrect 
-                ? state.score + 10 : state.score
+                ? state.score + 50 : state.score
             }
         case NEXT_PAGE:
             return{
