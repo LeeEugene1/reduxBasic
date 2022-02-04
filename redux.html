@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/5.0.0-alpha.0/redux.js" integrity="sha512-rrwKW9q7MLeNxl6R7SHb2DjciTUBoCFCdbTwMQWdfJ1uqT22lKR5YWdbKoRuBLFGk3XoEZ7jRwWjiCGLopwW1g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <title>Document</title>
+    <style>
+        .container{
+            border:5px solid black;
+            padding:10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="red"></div>
+    <div id="blue"></div>
+
+    <script>
+        function reducer(state, action){
+            console.log(state)
+            console.log(action)
+            if(state === undefined){
+                return {color:'yellow'}
+            }
+            var newState;
+            if(action.type === 'CHANGE_COLOR'){
+                //     state.color = 'red'
+                // state를 직접바꾸기보다는 객체를 복제(object.assign)해서 컬러를 넣어주기
+                newState = Object.assign({},state,{color:action.color})
+            }
+            return newState
+        }
+        var store = Redux.createStore(
+            reducer,
+            window.__REDUX_DEVTOOLS_EXTENSION__ && //크롬 익스텐션으로 리덕스를 보기위함
+    window.__REDUX_DEVTOOLS_EXTENSION__()
+            )
+        console.log(store.getState())
+        function red(){
+            var state = store.getState()
+            document.querySelector('#red').innerHTML = `
+                <div class="container" id="component red" style="background-color:${state.color}">
+                    <h1>red</h1>
+                    <input type="button" value="fire" onclick="
+                        store.dispatch({type:'CHANGE_COLOR', color:'red'})
+                    "></input>   
+                </div>
+            `
+        }
+        red()
+        //state값이 바뀔때마다 red()를 호출하려면
+        store.subscribe(red)
+
+        function blue(){
+            var state = store.getState()
+            document.querySelector('#blue').innerHTML = `
+                <div class="container" id="component red" style="background-color:${state.color}">
+                    <h1>red</h1>
+                    <input type="button" value="fire" onclick="
+                        store.dispatch({type:'CHANGE_COLOR', color:'blue'})
+                    "></input>   
+                </div>
+            `
+        }
+        blue()
+        store.subscribe(blue)
+    </script>
+</body>
+</html>

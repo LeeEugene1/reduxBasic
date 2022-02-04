@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/5.0.0-alpha.0/redux.js" integrity="sha512-rrwKW9q7MLeNxl6R7SHb2DjciTUBoCFCdbTwMQWdfJ1uqT22lKR5YWdbKoRuBLFGk3XoEZ7jRwWjiCGLopwW1g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <title>Document</title>
+</head>
+<body>
+    <div id="subject"></div>
+    <div id="toc"></div>
+    <div id="control"></div>
+    <div id="content"></div>
+
+    <script>
+
+//준비
+//1. store를 만들어 reducer를 주입(확인하는 방법: console.log(sotre.getState()))
+//2. action을 발생시킨다(예를들어 버튼 onclick event)
+//3. newState를 활용해 state를 직접바꾸기보다는 객체를 복제(object.assign)해서 newState를 return해 UI 업데이트
+//4. state값이 바뀔때마다 업데이트된 값이 호출되게 store.subscribe(호출할UI관련함수)
+
+//등록
+//1.onclick이벤트를 누르면 form태그의 제목,내용을 가지고 action.type===create안의 내용이 작동
+//2.newState 업데이트
+//3.store.subscribe(TOC)
+
+        function reducer(state, action){
+        // console.log(state, action)
+            if(state === undefined)//초기값
+                return{
+                    max_id:2,
+                    mode:'read',
+                    selected_id:null,
+                    contents:[
+                        {id:1, title:'HTML',desc:'HTML is ..'},
+                        {id:2, title:'CSS',desc:'CSS is ..'},
+                    ]
+                }
+                var newState;
+                if(action.type === 'SELECT'){
+                    newState = Object.assign({}, state, {selected_id:action.id})
+                }else if(action.type === 'CREATE'){
+                    console.log(action.title)
+                    console.log(action.description)
+                    var newMaxId = state.max_id + 1
+                    newContent = state.contents.concat()//초기 contents 복제
+                    newContent.push({id:newMaxId,title:action.title, desc:action.description})
+                    newState = Object.assign({}, state, {
+                        max_id:newMaxId,
+                        mode:'read',
+                        contents:newContent,
+                    })//나머지 초기값 복제
+                }else if(action.type === 'CHANGE_MODE'){
+                    newState = Object.assign({}, state, {
+                        mode:'create'
+                    })
+                }
+                return newState
+            }
+
+            var store = Redux.createStore(reducer);
+
+            function subject(){
+                document.querySelector('#subject').innerHTML=`
+                <header>
+                    <h1>WEB</h1>
+                    HELLO WEB!
+                </header>
+                `
+        }
+
+        function TOC(){
+            var state = store.getState()
+            var i = 0;
+            var liTags = ''
+            while(i<state.contents.length){
+                liTags = liTags + `
+                <li>
+                    <a onclick="
+                            event.preventDefault()
+                            var action = {type:'SELECT',id:${state.contents[i].id}}
+                            store.dispatch(action)
+                        "
+                        href="${state.contents[i].id}.html">
+                        ${state.contents[i].title}
+                    </a>
+                </li>
+               
+                `
+                i += 1
+            }
+            document.querySelector('#toc').innerHTML=`
+            <nav>
+                <ol>
+                    ${liTags}
+                </ol>
+            </nav>
+            `
+        }
+       
+        function control(){
+            var state = store.getState();
+            document.querySelector('#control').innerHTML=`
+            <article>
+                <ul>
+                    <li><a onClick="
+                            event.preventDefault();
+                            store.dispatch({type:'CHANGE_MODE'})
+                        " href="/create">create</a></li>
+                    <li><input type="button" value="delete"></li>
+
+                </ul>
+            </article>
+            `
+        }
+        function content(){
+            var i = 0;
+            var state = store.getState();
+            console.log(state)
+            if (state.mode === 'read'){
+                var atitle = ''
+                var adesc = ''
+                while(i < state.contents.length){
+                    if(state.selected_id === state.contents[i].id){
+                        atitle = state.contents[i].title
+                        adesc = state.contents[i].desc
+                        break;
+                    }
+                    i += 1
+                }
+                document.querySelector('#content').innerHTML=`
+                    <article>
+                        <h2>${atitle}</h2>
+                        ${adesc}
+                    <article>
+                `
+            }else if (state.mode === 'create'){
+                document.querySelector('#content').innerHTML=`
+                    <article>
+                        <form onSubmit="
+                            event.preventDefault();
+                            const _title = this.title.value
+                            const _desc = this.description.value
+                            var action = {type:'CREATE', title:_title, description:_desc}
+                            store.dispatch(action)
+                        ">
+                            <p><input name="title" type="text" placeholder="title"/></p>
+                            <p><textarea name="description" placeholder="type content"></textarea></p>
+                            <p><input type="submit" value="제출하기"/></p>
+                        </form>
+                    </article>
+                `
+            }
+            
+        }
+
+        TOC()
+        subject()
+        content()
+        control()
+        store.subscribe(content)
+        store.subscribe(TOC)
+
+    </script>
+</body>
+</html>
